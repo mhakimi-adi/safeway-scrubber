@@ -1,22 +1,38 @@
-import random
-
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
+import src.executor as executor
+import lib.constants as constants
 
 app = FastAPI()
 
+# Product Sample List
+@app.get("/products/sample")
+def product_list_test():
+    return executor.product_list_test().json()
 
-@app.get("/")
-def read_root():
-    import requests
+# Product List by Category and Store
+@app.get("/products"
+    + "/results/{results}"
+    + "/offset/{offset}"
+    + "/category_id/{category_id}"
+    + "/storeid/{storeid}"
+)
+def product_list_category(
+    results: int,
+    offset: int,
+    category_id: str,
+    storeid: int
+):
+    return executor.product_list_category(
+        results=results,
+        offset=offset,
+        category_id=category_id,
+        storeid=storeid
+    ).json()
 
-    # Search GitHub's repositories for requests
-    session = requests.Session()
-
-    load = session.get(
-        'https://www.safeway.com/abs/pub/xapi/v1/aisles/products?pagename=aisles&rows=14&start=0&search-type=category&featured=false&q=&sort=&pp=none&banner=safeway&channel=pickup&storeid=1965&category-id=1_1&url=https://www.safeway.com&pageurl=https://www.safeway.com&request-id=3&search-uid=',
-        headers = {'Ocp-Apim-Subscription-Key': 'e914eec9448c4d5eb672debf5011cf8f'}
+# Product List All Categories by Store
+@app.get("/products/all")
+def product_list_all():
+    return Response(
+        content=executor.product_list_all(),
+        media_type=constants.DEFAULT_MEDIA_TYPE
     )
-
-    # Inspect some attributes of the `requests` repository
-    json_response = load.json()
-    return json_response
