@@ -36,3 +36,11 @@ def product_list_all():
         content=executor.product_list_all(),
         media_type=constants.DEFAULT_MEDIA_TYPE
     )
+
+# Product List Save to MySQL
+@app.get("/products/sync")
+def product_list_sync():
+    return Response(
+        content=executor.product_list_sync(),
+        media_type=constants.DEFAULT_MEDIA_TYPE
+    )
