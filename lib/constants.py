@@ -1,4 +1,6 @@
 from enum import Enum
+import os
+
 # API Schema
 DEFAULT_MEDIA_TYPE = 'application/json'
 
@@ -31,3 +33,10 @@ DEFAULT_ROWS = 100
 DEFAULT_START = 0
 DEFAULT_CATEGORY_ID = Categories.INTL.value
 DEFAULT_STORE_ID = 1965
+
+# MySQL DB Connections
+SFS_DB_HOST = os.getenv('SFS_DB_HOST')
+SFS_DB_PORT = os.getenv('SFS_DB_PORT')
+SFS_DB_USER = os.getenv('SFS_DB_USER')
+SFS_DB_PASS = os.getenv('SFS_DB_PASS')
+SFS_DB_DBS = os.getenv('SFS_DB_DBS')

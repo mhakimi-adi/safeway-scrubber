@@ -1,9 +1,13 @@
 import requests
-from lib.utils import paramBuilder, headerBuilder
+from lib.utils import paramBuilder, headerBuilder, dataCleanup
 import lib.constants as constants
 import json
 import time
 from pathlib import Path
+import pandas
+from sqlalchemy import create_engine
+from datetime import datetime
+import os
 
 # Handles the business logic for product_list_test request
 def product_list_test():
@@ -80,4 +84,41 @@ def product_list_all():
     with open(path, 'w') as f:
         json.dump(results, f)
 
+    return json.dumps({'total': total})
+
+# Handles the business logic for product_list_sync request
+def product_list_sync():
+    # Get data to insert
+    df = pandas.read_json(os.path.join(os.getcwd(), "data/data.json"))
+    df = dataCleanup(df)
+    total = 0
+
+    # Create SQLAlchemy engine to connect to MySQL Database
+    engine = create_engine("mysql+pymysql://{user}:{pw}@{host}:{port}/{db}"
+                    .format(
+                        host=constants.SFS_DB_HOST,
+                        port=constants.SFS_DB_PORT,
+                        db=constants.SFS_DB_DBS,
+                        user=constants.SFS_DB_USER,
+                        pw=constants.SFS_DB_PASS
+                    )
+    )
+
+    # Table timestamp
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%m_%d_%Y")
+    name = "safeway_scrubber_{date_time}".format(date_time=date_time)
+
+    # Save to DB
+    try:
+        total = df.to_sql(
+            name,
+            engine,
+            if_exists='replace',
+            index=True
+        )
+    except Exception as e:
+        print("Error :: product_list_sync() :: ", e)
+        return json.dumps({'total': total})
+    
     return json.dumps({'total': total})
