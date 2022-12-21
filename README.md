@@ -29,7 +29,7 @@ There are **four** different endpoints in this api:
 
 `/products/sync` - uploads the data from `data.json` to a mysql db.
 
-## :: Swagger
+## :clipboard: Swagger
 
 To access the swagger documentation simply go to `http://localhost:8000/docs`:
 
